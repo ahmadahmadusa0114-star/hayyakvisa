@@ -5,6 +5,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const connectDB = require('./db');
+const seedDB = require('./seed');
 
 const authRoutes = require('./routes/auth');
 const companiesRoutes = require('./routes/companies');
