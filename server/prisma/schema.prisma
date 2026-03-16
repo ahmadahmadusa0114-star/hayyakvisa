@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Company {
+  id             String   @id @default(uuid())
+  name           String
+  email          String   @unique
+  password       String
+  markup_price   Float    @default(3.0)
+  wallet_balance Float    @default(0.0)
+  status         String   @default("ACTIVE") // ACTIVE | INACTIVE
+  created_at     DateTime @default(now())
+
+  applications       Application[]
+  wallet_transactions WalletTransaction[]
+}
+
+model Application {
+  id              String   @id @default(uuid())
+  company_id      String
+  full_name_ar    String
+  full_name_en    String
+  passport_number String
+  nationality     String
+  date_of_birth   String
+  passport_expiry String
+  phone           String
+  passport_image  String?
+  personal_photo  String?
+  status          String   @default("SUBMITTED") // SUBMITTED | PROCESSING | APPROVED | REJECTED
+  manifest_id     String?
+  created_at      DateTime @default(now())
+
+  company  Company   @relation(fields: [company_id], references: [id], onDelete: Cascade)
+  manifest Manifest? @relation(fields: [manifest_id], references: [id])
+}
+
+model Manifest {
+  id              String   @id @default(uuid())
+  manifest_number String   @unique
+  created_at      DateTime @default(now())
+
+  applications Application[]
+}
+
+model WalletTransaction {
+  id          String   @id @default(uuid())
+  company_id  String
+  type        String   // DEPOSIT | DEDUCTION | REFUND
+  amount      Float
+  description String?
+  created_at  DateTime @default(now())
+
+  company Company @relation(fields: [company_id], references: [id], onDelete: Cascade)
+}
+
+model Admin {
+  id         String   @id @default(uuid())
+  email      String   @unique
+  password   String
+  name       String
+  created_at DateTime @default(now())
+}

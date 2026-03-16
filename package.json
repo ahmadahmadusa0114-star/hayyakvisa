@@ -1,0 +1,17 @@
+{
+  "name": "hayyakvisa",
+  "version": "1.0.0",
+  "description": "Security Approvals System for Travel Agencies",
+  "scripts": {
+    "dev": "concurrently --names \"SERVER,CLIENT\" --prefix-colors \"cyan,magenta\" \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "npm run dev --prefix server",
+    "dev:client": "npm run dev --prefix client",
+    "install:all": "npm install & npm install --prefix server & npm install --prefix client",
+    "setup": "npm run install:all & npm run db:migrate --prefix server & npm run db:seed --prefix server",
+    "db:migrate": "npm run db:migrate --prefix server",
+    "db:seed": "npm run db:seed --prefix server"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
