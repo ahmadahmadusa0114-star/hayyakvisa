@@ -44,9 +44,9 @@ router.get('/', authenticate, async (req, res) => {
 
   // Companies can only see their own
   if (req.user.role === 'COMPANY') {
-    where.company_id = req.user.id;
+    where.company = req.user.id;
   } else if (company_id) {
-    where.company_id = company_id;
+    where.company = company_id;
   }
 
   if (status) where.status = status;
@@ -74,7 +74,7 @@ router.get('/', authenticate, async (req, res) => {
 
 // GET stats
 router.get('/stats', authenticate, async (req, res) => {
-  const where = req.user.role === 'COMPANY' ? { company_id: req.user.id } : {};
+  const where = req.user.role === 'COMPANY' ? { company: req.user.id } : {};
 
   const [total, submitted, processing, approved, rejected] = await Promise.all([
     Application.countDocuments(where),
@@ -96,7 +96,7 @@ router.get('/:id', authenticate, async (req, res) => {
   if (!application) return res.status(404).json({ error: 'Application not found' });
 
   // Companies can only see their own
-  if (req.user.role === 'COMPANY' && application.company_id.toString() !== req.user.id) {
+  if (req.user.role === 'COMPANY' && application.company.toString() !== req.user.id) {
     return res.status(403).json({ error: 'Access denied' });
   }
 
@@ -156,7 +156,7 @@ router.post('/', authenticate, upload.fields([
   await company.save();
 
   const application = await Application.create({
-    company_id: companyId,
+    company: companyId,
     full_name_ar,
     full_name_en,
     passport_number,
@@ -170,7 +170,7 @@ router.post('/', authenticate, upload.fields([
   });
 
   await WalletTransaction.create({
-    company_id: companyId,
+    company: companyId,
     type: 'DEDUCTION',
     amount: company.markup_price,
     description: `Application submitted for passport ${passport_number}`

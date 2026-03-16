@@ -11,9 +11,9 @@ router.get('/transactions', authenticate, async (req, res) => {
 
   const where = {};
   if (req.user.role === 'COMPANY') {
-    where.company_id = req.user.id;
+    where.company = req.user.id;
   } else if (company_id) {
-    where.company_id = company_id;
+    where.company = company_id;
   }
 
   const [transactions, total] = await Promise.all([

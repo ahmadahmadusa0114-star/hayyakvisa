@@ -43,7 +43,7 @@ router.get('/export', authenticate, requireAdmin, async (req, res) => {
 
   const where = {};
   if (manifest_id) {
-    where.manifest_id = manifest_id;
+    where.manifest = manifest_id;
   } else {
     where.status = { $in: ['SUBMITTED', 'PROCESSING'] };
   }
@@ -66,7 +66,7 @@ router.get('/export', authenticate, requireAdmin, async (req, res) => {
   const appIds = applications.map(a => a._id);
   await Application.updateMany(
     { _id: { $in: appIds } },
-    { $set: { manifest_id: manifest._id, status: 'PROCESSING' } }
+    { $set: { manifest: manifest._id, status: 'PROCESSING' } }
   );
 
   // Build Excel data

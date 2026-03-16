@@ -27,7 +27,7 @@ const companySchema = new mongoose.Schema({
 companySchema.virtual('applications', {
   ref: 'Application',
   localField: '_id',
-  foreignField: 'company_id',
+  foreignField: 'company',
   count: true
 });
 
@@ -47,7 +47,7 @@ const manifestSchema = new mongoose.Schema({
 manifestSchema.virtual('applications', {
   ref: 'Application',
   localField: '_id',
-  foreignField: 'manifest_id',
+  foreignField: 'manifest',
   count: true
 });
 
@@ -60,8 +60,8 @@ const Manifest = mongoose.model('Manifest', manifestSchema);
 // Application Model
 // ==========================================
 const applicationSchema = new mongoose.Schema({
-  company_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true },
-  manifest_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Manifest', default: null },
+  company: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true },
+  manifest: { type: mongoose.Schema.Types.ObjectId, ref: 'Manifest', default: null },
   full_name_ar: { type: String, required: true },
   full_name_en: { type: String, required: true },
   passport_number: { type: String, required: true },
@@ -92,7 +92,7 @@ const Application = mongoose.model('Application', applicationSchema);
 // WalletTransaction Model
 // ==========================================
 const walletTransactionSchema = new mongoose.Schema({
-  company_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true },
+  company: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true },
   type: { type: String, enum: ['DEPOSIT', 'DEDUCTION', 'REFUND'], required: true },
   amount: { type: Number, required: true },
   description: { type: String, default: null },
