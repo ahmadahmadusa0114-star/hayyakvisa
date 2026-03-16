@@ -3,9 +3,40 @@ const bcrypt = require('bcryptjs');
 const { Admin, Company } = require('./models');
 
 async function main() {
-  console.log('🌱 Checking database seeding...');
+  console.log('🌱 Checking database seeding and migrations...');
 
   try {
+    // 1. Database Migration: Update old field names to new ones
+    console.log('🔄 Running data migrations...');
+    
+    // Update Application collection: company_id -> company, manifest_id -> manifest
+    await mongoose.connection.collection('applications').updateMany(
+      { company_id: { $exists: true } },
+      [
+        { $set: { company: "$company_id" } },
+        { $unset: "company_id" }
+      ]
+    );
+    await mongoose.connection.collection('applications').updateMany(
+      { manifest_id: { $exists: true } },
+      [
+        { $set: { manifest: "$manifest_id" } },
+        { $unset: "manifest_id" }
+      ]
+    );
+
+    // Update WalletTransaction collection: company_id -> company
+    await mongoose.connection.collection('wallettransactions').updateMany(
+      { company_id: { $exists: true } },
+      [
+        { $set: { company: "$company_id" } },
+        { $unset: "company_id" }
+      ]
+    );
+
+    console.log('✅ Migrations complete!');
+
+    // 2. Seeding: Create missing core records
     // Create admin
     const adminEmail = 'admin@hayyakvisa.com';
     const existing = await Admin.findOne({ email: adminEmail });
@@ -39,7 +70,7 @@ async function main() {
 
     console.log('✨ Seeding check complete!');
   } catch (err) {
-    console.error('❌ Seeding failed:', err);
+    console.error('❌ Migration/Seeding failed:', err);
   }
 }
 
